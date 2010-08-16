@@ -837,14 +837,14 @@ module Celerity
       @webclient = if proxy = opts.delete(:proxy)
                      phost, pport = proxy.split(":")
                      webclient = ::HtmlUnit::WebClient.new(browser_version, phost, pport.to_i)
-                     if noproxy = opts.delete(:noproxy)
+                     if proxy_bypass = opts.delete(:proxy_bypass)
                        proxyconfig = webclient.getProxyConfig()
-                       if noproxy.kind_of? String
-                         temp = noproxy
-                         noproxy = Array.new
-                         noproxy << temp
+                       if proxy_bypass.kind_of? String
+                         temp = proxy_bypass
+                         proxy_bypass = Array.new
+                         proxy_bypass << temp
                        end
-                       noproxy.each do |pattern|
+                       proxy_bypass.each do |pattern|
                          proxyconfig.addHostsToProxyBypass(pattern)
                        end
                        webclient.setProxyConfig(proxyconfig)
