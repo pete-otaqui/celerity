@@ -40,6 +40,8 @@ module Celerity
     # @option opts :javascript_exceptions [Boolean] (false) Raise exceptions on script errors. Disabled by default.
     # @option opts :log_level [Symbol] (:warning) @see log_level=
     # @option opts :proxy [String] (nil) Proxy server to use, in address:port format.
+    # @option opts :proxy_autoconfig_url [String] (nil) Autoproxy configuration url (PAC file).
+    # @option opts :proxy_bypass [String, Array] (nil) One or more regexes matching domains that should be skipped.
     # @option opts :refresh_handler [:immediate, :waiting, :threaded] (:immediate) Set HtmlUnit's refresh handler.
     # @option opts :render [:html, :xml] (:html) What DOM representation to send to connected viewers.
     # @option opts :resynchronize [Boolean] (false) Use HtmlUnit::NicelyResynchronizingAjaxController to resynchronize Ajax calls.
@@ -81,6 +83,10 @@ module Celerity
 
     def inspect
       short_inspect :exclude => %w[@webclient @browser @object @options @listener @event_listener]
+    end
+    
+    def get_webclient
+      @webclient
     end
 
     #
@@ -814,9 +820,9 @@ module Celerity
       browser = (opts.delete(:browser) || :firefox3).to_sym
 
       browser_version = case browser
-                        when :firefox, :ff, :ff2
+                        when :ff2
                           ::HtmlUnit::BrowserVersion::FIREFOX_2
-                        when :firefox3, :ff3
+                        when :firefox, :ff, :firefox3, :ff3
                           ::HtmlUnit::BrowserVersion::FIREFOX_3
                         when :internet_explorer, :ie
                           ::HtmlUnit::BrowserVersion::INTERNET_EXPLORER_7
@@ -830,7 +836,26 @@ module Celerity
 
       @webclient = if proxy = opts.delete(:proxy)
                      phost, pport = proxy.split(":")
-                     ::HtmlUnit::WebClient.new(browser_version, phost, pport.to_i)
+                     webclient = ::HtmlUnit::WebClient.new(browser_version, phost, pport.to_i)
+                     if noproxy = opts.delete(:noproxy)
+                       proxyconfig = webclient.getProxyConfig()
+                       if noproxy.kind_of? String
+                         temp = noproxy
+                         noproxy = Array.new
+                         noproxy << temp
+                       end
+                       noproxy.each do |pattern|
+                         proxyconfig.addHostsToProxyBypass(pattern)
+                       end
+                       webclient.setProxyConfig(proxyconfig)
+                     end
+                     webclient
+                   elsif proxy_autoconfig_url = opts.delete(:proxy_autoconfig_url)
+                     webclient = ::HtmlUnit::WebClient.new(browser_version)
+                     proxyconfig = ::HtmlUnit::ProxyConfig.new()
+                     proxyconfig.setProxyAutoConfigUrl(proxy_autoconfig_url)
+                     webclient.setProxyConfig(proxyconfig)
+                     webclient
                    else
                      ::HtmlUnit::WebClient.new(browser_version)
                    end
