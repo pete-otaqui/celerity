@@ -856,13 +856,13 @@ module Celerity
       if proxy_bypass = opts.delete(:proxy_bypass)
         proxy_bypass = [proxy_bypass] unless proxy_bypass.kind_of? Array
         proxy_bypass.each do |pattern|
-         proxyconfig.addHostsToProxyBypass(pattern)
+        proxy_config.addHostsToProxyBypass(pattern)
         end
       end
       if proxy_autoconfig_url = opts.delete(:proxy_autoconfig_url)
-        proxyconfig.setProxyAutoConfigUrl(proxy_autoconfig_url)
+        proxy_config.setProxyAutoConfigUrl(proxy_autoconfig_url)
       end
-      webclient.setProxyConfig(proxyconfig)
+      webclient.setProxyConfig(proxy_config)
       
 
       self.javascript_exceptions  = false unless opts.delete(:javascript_exceptions)
