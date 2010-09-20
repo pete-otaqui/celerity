@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/watirspec/spec_helper'
+require File.expand_path("../watirspec/spec_helper", __FILE__)
 
 describe "Browser" do
   describe "#new" do
@@ -74,6 +74,17 @@ describe "Browser" do
       ViewerConnection.should_receive(:create).with("localhost", 1234)
 
       Browser.new(:viewer => "localhost:1234").close
+    end
+  
+    it "should use the specified cache limit" do
+      opts = WatirSpec.implementation.browser_args.first.merge(:cache_limit => 100)
+      b = Browser.new(opts)
+      
+      begin
+        b.cache_limit.should == 100
+      ensure
+        b.close
+      end
     end
   end
 
