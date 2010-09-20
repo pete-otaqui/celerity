@@ -80,6 +80,10 @@ module Celerity
   class H6 < NonControlElement
     TAGS = [ Identifier.new('h6') ]
   end
+  
+  class Ins < NonControlElement
+    TAGS = [ Identifier.new('ins') ]
+  end
 
   class Ins < NonControlElement
     TAGS = [ Identifier.new('ins') ]

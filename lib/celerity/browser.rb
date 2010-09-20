@@ -308,6 +308,18 @@ module Celerity
     def clear_cache
       @webclient.cache.clear
     end
+    
+    #
+    # Set the maximum number of files to cache.
+    #
+    
+    def cache_limit=(size)
+      @webclient.cache.setMaxSize(size)
+    end
+    
+    def cache_limit
+      @webclient.cache.getMaxSize
+    end
 
     #
     # Set the maximum number of files to cache.
@@ -831,13 +843,13 @@ module Celerity
                         when :firefox, :ff, :firefox3, :ff3 # default :firefox
                           ::HtmlUnit::BrowserVersion::FIREFOX_3
                         when :firefox_3_6, :ff36
-                          ::HtmlUnit::BrowserVersion::FIREFOX_3
+                          ::HtmlUnit::BrowserVersion::FIREFOX_3_6
                         when :internet_explorer_6, :ie6
                           ::HtmlUnit::BrowserVersion::INTERNET_EXPLORER_6
-                        when :internet_explorer, :ie, :internet_explorer7, :ie7  # default :ie
+                        when :internet_explorer, :ie, :internet_explorer7, :internet_explorer_7, :ie7  # default :ie
                           ::HtmlUnit::BrowserVersion::INTERNET_EXPLORER_7
                         when :internet_explorer_8, :ie8
-                          ::HtmlUnit::BrowserVersion::INTERNET_EXPLORER_7
+                          ::HtmlUnit::BrowserVersion::INTERNET_EXPLORER_8
                         else
                           raise ArgumentError, "unknown browser: #{browser.inspect}"
                         end
